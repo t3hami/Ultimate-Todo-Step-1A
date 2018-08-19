@@ -11,10 +11,13 @@ A TDD Approach to Building an API using NoSQL Database
 ## Test cases:
 
 - For /todo/api/v1.0/tasks:
-1. Request method checking (For GET and POST)
-2. Checking missing data in POST request
+1. POST request test(With complete data)
+2. POST request test(With incomplete data)
+3. GET request test for all task
 
 - For /todo/api/v1.0/tasks/task_id
-1. Request method checking (For GET, PUT and DELETE)
-2. Checking whether provided task_id exist and valid.
-3. Checking missing data in PUT request. Update only provided data.
+1. Request with wrong task_id
+2. GET request test for provided task_id
+3. PUT request test for provided task_id(With data)
+4. PUT request for test provided task_id(With no data)
+5. DELETE request test for provided task_id
