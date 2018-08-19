@@ -1,18 +1,16 @@
 from flask import Flask, request, jsonify
-from flask_pymongo import PyMongo
-import json
-from bson.objectid import ObjectId
-
-def object_id_encoder(o):
-    if type(o) == ObjectId:
-        return str(o)
-    return o.__str__
+from flask_pymongo import PyMongo, ObjectId
 
 app = Flask(__name__)
+
+mlab_uri = 'mongodb://root:123456seven@ds125602.mlab.com:25602/todo'
+local_uri = 'mongodb://localhost/todo'
+
 app.config['MONGO_DBNAME'] = 'todo'
-app.config['MONGO_URI'] = 'mongodb://root:123456seven@ds125602.mlab.com:25602/todo'
+app.config['MONGO_URI'] = local_uri
 
 mongo = PyMongo(app)
+
 
 @app.route('/todo/api/v1.0/tasks', methods=['GET', 'POST'])
 def tasks():
@@ -21,7 +19,7 @@ def tasks():
         serialize_tasks = []
         for task in unserialize_tasks:
             serialize_tasks.append({
-                #'id': task['_id'],
+                'id': str(task['_id']),
                 'title': task['title'],
                 'description': task['description'],
                 'done': task['done']
@@ -34,20 +32,38 @@ def tasks():
             'description': request.json['description'],
             'done': False
         }
-        task_cursor = mongo.db.tasks
-        task_cursor.insert(task)
+        mongo.db.tasks.insert(task)
         return jsonify({'status': 'Success'})
+
     else:
         pass
+
 
 @app.route('/todo/api/v1.0/tasks/<task_id>', methods=['GET', 'PUT', 'DELETE'])
 def task(task_id):
     if request.method == 'GET':
-        pass
+        task_cursor = mongo.db.tasks.find_one({'_id': ObjectId(task_id)})
+        if task_cursor:
+            task = {
+                '_id': str(task_cursor['_id']),
+                'title': task_cursor['title'],
+                'description': task_cursor['description'],
+                'done': task_cursor['done']
+            }
+            return jsonify(task)
+
     elif request.method == 'PUT':
-        pass
+        mongo.db.tasks.save({
+            '_id': ObjectId(task_id),
+            'title': request.json['title'],
+            'description': request.json['description'],
+            'done': request.json['done']
+            })
+        return jsonify({'status': 'Success'})
+
     elif request.method == 'DELETE':
-        pass
+        mongo.db.tasks.remove({'_id': ObjectId(task_id)})
+        return jsonify({'status': 'Success'})
     else:
         pass
 
