@@ -37,23 +37,14 @@ def tasks():
             return jsonify({'status': 'Success', '_id': str(id)})
         except KeyError:
             return jsonify({'status': 'Missing title or discription, or both.'})
-    else:
-        pass
 
 
 @app.route('/todo/api/v1.0/tasks/<task_id>', methods=['GET', 'PUT', 'DELETE'])
 def task(task_id):
     if request.method == 'GET':
         if is_task_present(task_id):
-            task_cursor = mongo.db.tasks.find_one({'_id': ObjectId(task_id)})
-            if task_cursor:
-                task = {
-                    '_id': str(task_cursor['_id']),
-                    'title': task_cursor['title'],
-                    'description': task_cursor['description'],
-                    'done': task_cursor['done']
-                }
-                return jsonify(task)
+            task = get_task(task_id)
+            return jsonify(task)
         else:
             return jsonify({'status': 'There is no task with _id: ' + task_id})
 
@@ -62,14 +53,8 @@ def task(task_id):
             if not request.json:
                 return jsonify({'status': 'Please provide atleast one key, value to update'})
             old_task = {}
-            task_cursor = mongo.db.tasks.find_one({'_id': ObjectId(task_id)})
-            if task_cursor:
-                old_task = {
-                    '_id': ObjectId(task_id),
-                    'title': task_cursor['title'],
-                    'description': task_cursor['description'],
-                    'done': task_cursor['done']
-                }
+            old_task = get_task(task_id)
+            old_task['_id'] = ObjectId(old_task['_id'])
             updated_task = {}
             for key in old_task.keys():
                 try:
@@ -100,6 +85,19 @@ def is_task_present(task_id):
         return True
     else:
         False
+
+
+def get_task(task_id):
+    task_cursor = mongo.db.tasks.find_one({'_id': ObjectId(task_id)})
+    if task_cursor:
+        task = {
+            '_id': str(task_cursor['_id']),
+            'title': task_cursor['title'],
+            'description': task_cursor['description'],
+            'done': task_cursor['done']
+        }
+    return task
+
 
 if __name__ == '__main__':
     app.run(debug=True)
