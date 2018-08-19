@@ -1,5 +1,4 @@
 from flask import Flask, request, jsonify
-from flask_pymongo import PyMongo, ObjectId
 from nosql_db import NoSQL
 
 app = Flask(__name__)
@@ -41,7 +40,7 @@ def task(task_id):
                 return jsonify({'status': 'Please provide atleast one key, value to update'})
             old_task = {}
             old_task = mongodb.get_task(task_id)
-            old_task['_id'] = ObjectId(old_task['_id'])
+            old_task['_id'] = mongodb.to_obj_id(old_task['_id'])
             updated_task = {}
             for key in old_task.keys():
                 try:

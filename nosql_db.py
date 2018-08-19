@@ -49,3 +49,6 @@ class NoSQL:
 
     def update_task(self, task_id, task):
         self.mongo.db.tasks.save(task)
+    
+    def to_obj_id(self, id):
+        return ObjectId(id)
