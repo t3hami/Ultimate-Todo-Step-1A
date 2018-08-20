@@ -71,7 +71,7 @@ class TestApp(unittest.TestCase):
         response = requests.put('http://127.0.0.1:5000/todo/api/v1.0/tasks/'+str(id),json.dumps({}), headers={'content-type': 'application/json'})
         # Checking response when no data is provided
         self.assertEqual(response.status_code, 200)
-        #self.assertEqual(response.json()['status'],'Please provide atleast one key, value to update')
+        self.assertEqual(response.json()['status'],'Please provide atleast one key, value to update')
     
     def test_delete_task(self):
         # I will post a task and then delete it
