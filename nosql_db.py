@@ -5,7 +5,7 @@ class NoSQL:
         mlab_uri = 'mongodb://root:123456seven@ds125602.mlab.com:25602/todo'
         local_uri = 'mongodb://localhost/todo'
         app.config['MONGO_DBNAME'] = 'todo'
-        app.config['MONGO_URI'] = local_uri
+        app.config['MONGO_URI'] = mlab_uri
         self.mongo = PyMongo(app)
     
     def get_all_tasks(self):
